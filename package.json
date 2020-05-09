@@ -10,6 +10,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "test": "jest",
     "dev": "next",
     "build": "next build",
     "start": "next start"
