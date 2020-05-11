@@ -1,14 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+
+import useClock from '~/hooks/useClock';
 
 const Clock = () => {
-  const [now, setNow] = useState(Date.now());
-
-  useEffect(() => {
-    const timerId = setInterval(() => {
-      setNow(Date.now());
-    }, 1000);
-    return () => clearInterval(timerId);
-  }, []);
+  const now = useClock();
 
   const current = new Date(now);
   return (
