@@ -17,7 +17,7 @@ describe('useClock hooks', () => {
     expect(result.current).toBe(Date.now());
   });
 
-  it('advance 1 sec', () => {
+  it('advance 1 sec when passing interval arg is 1000 msec', () => {
     const { result } = renderHook(() => useClock());
     const now = Date.now();
 
@@ -26,13 +26,33 @@ describe('useClock hooks', () => {
     act(() => {
       jest.advanceTimersByTime(500);
     });
-
     expect(result.current).toBe(now);
 
     act(() => {
       jest.advanceTimersByTime(500);
     });
+    expect(result.current).toBe(now + 1000);
+  });
 
+  it('advance 1 sec when passing interval arg is 200 msec', () => {
+    const { result } = renderHook(() => useClock(200));
+    const now = Date.now();
+
+    expect(result.current).toBe(now);
+
+    act(() => {
+      jest.advanceTimersByTime(100);
+    });
+    expect(result.current).toBe(now);
+
+    act(() => {
+      jest.advanceTimersByTime(450);
+    });
+    expect(result.current).toBe(now + 400);
+
+    act(() => {
+      jest.advanceTimersByTime(450);
+    });
     expect(result.current).toBe(now + 1000);
   });
 });
