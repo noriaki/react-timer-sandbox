@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 
-const useClock: (interval?: number) => number = (interval = 1000) => {
-  const [now, setNow] = useState(Date.now());
+const useClock: (initialTime?: number, interval?: number) => number = (
+  initialTime = Date.now(),
+  interval = 1000,
+) => {
+  const [now, setNow] = useState(initialTime);
 
   useEffect(() => {
     const timerId = setInterval(() => {
