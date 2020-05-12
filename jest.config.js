@@ -12,6 +12,7 @@ module.exports = {
   testEnvironment: 'node',
   setupFilesAfterEnv: ['./jest.setup.ts'],
   testPathIgnorePatterns: [...pathIgnorePatterns, nodeModulesPattern, autoFixTempPattern],
+  timers: 'modern',
   transformIgnorePatterns: [...pathIgnorePatterns, nodeModulesPattern],
   watchPathIgnorePatterns: [...pathIgnorePatterns, nodeModulesPattern],
   modulePathIgnorePatterns: pathIgnorePatterns,
