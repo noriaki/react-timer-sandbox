@@ -2,8 +2,12 @@ import React from 'react';
 
 import useClock from '~/hooks/useClock';
 
-const Clock = () => {
-  const now = useClock();
+type ReactComponent = React.FC<{
+  currentTime: number;
+}>;
+
+const Clock: ReactComponent = ({ currentTime }) => {
+  const now = useClock(currentTime);
 
   const current = new Date(now);
   return (
