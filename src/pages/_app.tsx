@@ -9,4 +9,8 @@ const App = ({ Component, pageProps }: AppProps) => (
   </ClockContainer.Provider>
 );
 
+export const reportWebVitals = (metric) => {
+  console.log(metric);
+};
+
 export default App;
