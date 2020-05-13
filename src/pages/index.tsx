@@ -3,14 +3,10 @@ import { GetServerSideProps } from 'next';
 
 import Clock from '~/components/Clock';
 
-type ReactComponent = React.FC<{
-  currentTime: number;
-}>;
-
-const IndexPage: ReactComponent = ({ currentTime }) => (
+const IndexPage: React.FC = () => (
   <div>
     <p>Hello Next.js</p>
-    <Clock currentTime={currentTime} />
+    <Clock />
   </div>
 );
 

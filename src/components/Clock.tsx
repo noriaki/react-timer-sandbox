@@ -1,13 +1,9 @@
 import React from 'react';
 
-import useClock from '~/hooks/useClock';
+import ClockContainer from '~/containers/ClockContainer';
 
-type ReactComponent = React.FC<{
-  currentTime: number;
-}>;
-
-const Clock: ReactComponent = ({ currentTime }) => {
-  const now = useClock(currentTime);
+const Clock: React.FC = () => {
+  const now = ClockContainer.useContainer();
 
   const current = new Date(now);
   return (
