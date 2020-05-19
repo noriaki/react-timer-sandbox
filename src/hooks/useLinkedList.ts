@@ -2,7 +2,8 @@ import { useState, useCallback } from 'react';
 
 type LinkedListHook<T> = {
   state: T[];
-  currentIndex: number;
+  index: number;
+  value: T;
   next: () => void;
   prev: () => void;
   isFirst: () => boolean;
@@ -54,7 +55,8 @@ const useLinkedList = <T>(
 
   return {
     state: linkedList,
-    currentIndex: index,
+    index,
+    value: linkedList[index],
     next,
     prev,
     isFirst,
