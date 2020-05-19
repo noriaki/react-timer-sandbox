@@ -51,4 +51,9 @@ describe('useLinkedList hooks', () => {
     expect(result.current.isLast()).toBe(true);
     expect(result.current.currentIndex).toBe(2);
   });
+
+  it('set initial index', () => {
+    const { result } = renderHook(() => useLinkedList<number>([1, 10, 100], 1));
+    expect(result.current.currentIndex).toBe(1);
+  });
 });

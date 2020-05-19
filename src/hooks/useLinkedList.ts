@@ -9,9 +9,12 @@ type LinkedListHook<T> = {
   isLast: () => boolean;
 };
 
-const useLinkedList = <T>(initialLinkedList: T[] = []): LinkedListHook<T> => {
+const useLinkedList = <T>(
+  initialLinkedList: T[] = [],
+  initialIndex = 0,
+): LinkedListHook<T> => {
   const [linkedList] = useState(initialLinkedList);
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(initialIndex);
 
   const next = useCallback(() => setIndex((i) => i + 1), []);
   const prev = useCallback(() => setIndex((i) => i - 1), []);
