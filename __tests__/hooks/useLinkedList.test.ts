@@ -56,4 +56,32 @@ describe('useLinkedList hooks', () => {
     const { result } = renderHook(() => useLinkedList<number>([1, 10, 100], 1));
     expect(result.current.currentIndex).toBe(1);
   });
+
+  it('stick to the first of the index', () => {
+    const { result } = renderHook(() => useLinkedList<number>([1, 10, 100]));
+
+    expect(result.current.isFirst()).toBe(true);
+    expect(result.current.currentIndex).toBe(0);
+
+    act(() => {
+      result.current.prev();
+    });
+
+    expect(result.current.isFirst()).toBe(true);
+    expect(result.current.currentIndex).toBe(0);
+  });
+
+  it('stick to the last of the index', () => {
+    const { result } = renderHook(() => useLinkedList<number>([1, 10, 100], 2));
+
+    expect(result.current.isLast()).toBe(true);
+    expect(result.current.currentIndex).toBe(2);
+
+    act(() => {
+      result.current.next();
+    });
+
+    expect(result.current.isLast()).toBe(true);
+    expect(result.current.currentIndex).toBe(2);
+  });
 });

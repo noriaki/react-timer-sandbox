@@ -16,8 +16,28 @@ const useLinkedList = <T>(
   const [linkedList] = useState(initialLinkedList);
   const [index, setIndex] = useState(initialIndex);
 
-  const next = useCallback(() => setIndex((i) => i + 1), []);
-  const prev = useCallback(() => setIndex((i) => i - 1), []);
+  const next = useCallback(
+    () =>
+      setIndex((i) => {
+        const newIndex = i + 1;
+        if (newIndex > linkedList.length - 1) {
+          return i;
+        }
+        return newIndex;
+      }),
+    [linkedList.length],
+  );
+  const prev = useCallback(
+    () =>
+      setIndex((i) => {
+        const newIndex = i - 1;
+        if (newIndex < 0) {
+          return i;
+        }
+        return newIndex;
+      }),
+    [],
+  );
 
   const isFirst = useCallback(() => index === 0, [index]);
   const isLast = useCallback(() => index === linkedList.length - 1, [
