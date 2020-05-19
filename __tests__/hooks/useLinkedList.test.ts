@@ -84,4 +84,32 @@ describe('useLinkedList hooks', () => {
     expect(result.current.isLast()).toBe(true);
     expect(result.current.currentIndex).toBe(2);
   });
+
+  it('move the first index', () => {
+    const list = [1, 10, 100];
+    const { result } = renderHook(() =>
+      useLinkedList<number>(list, Math.floor(Math.random() * list.length)),
+    );
+
+    act(() => {
+      result.current.moveFirst();
+    });
+
+    expect(result.current.isFirst()).toBe(true);
+    expect(result.current.currentIndex).toBe(0);
+  });
+
+  it('move the last index', () => {
+    const list = [1, 10, 100];
+    const { result } = renderHook(() =>
+      useLinkedList<number>(list, Math.floor(Math.random() * list.length)),
+    );
+
+    act(() => {
+      result.current.moveLast();
+    });
+
+    expect(result.current.isLast()).toBe(true);
+    expect(result.current.currentIndex).toBe(list.length - 1);
+  });
 });

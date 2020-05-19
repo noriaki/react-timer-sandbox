@@ -7,6 +7,8 @@ type LinkedListHook<T> = {
   prev: () => void;
   isFirst: () => boolean;
   isLast: () => boolean;
+  moveFirst: () => void;
+  moveLast: () => void;
 };
 
 const useLinkedList = <T>(
@@ -45,6 +47,11 @@ const useLinkedList = <T>(
     linkedList.length,
   ]);
 
+  const moveFirst = useCallback(() => setIndex(0), []);
+  const moveLast = useCallback(() => setIndex(linkedList.length - 1), [
+    linkedList.length,
+  ]);
+
   return {
     state: linkedList,
     currentIndex: index,
@@ -52,6 +59,8 @@ const useLinkedList = <T>(
     prev,
     isFirst,
     isLast,
+    moveFirst,
+    moveLast,
   };
 };
 
