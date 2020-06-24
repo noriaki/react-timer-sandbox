@@ -113,7 +113,7 @@ const useTimetable = (
     [],
   );
 
-  const value = currentData[currentIndex];
+  const currentValue = currentData[currentIndex];
   const nearestValue = currentData[0];
   const remaining = useCallback<TimetableHook['remaining']>(
     (time) => {
@@ -121,9 +121,9 @@ const useTimetable = (
       if (nearestValue < seconds) {
         tick(time);
       }
-      return value - seconds;
+      return currentValue - seconds;
     },
-    [value, nearestValue, tick],
+    [currentValue, nearestValue, tick],
   );
 
   const isFirst = useCallback(() => currentIndex === 0, [currentIndex]);
@@ -143,7 +143,7 @@ const useTimetable = (
 
   return {
     index: currentIndex,
-    value,
+    value: currentValue,
     tick,
     next,
     prev,
