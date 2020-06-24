@@ -117,6 +117,64 @@ describe('useTimetable hooks', () => {
     });
   });
 
+  describe('現時刻から`index`の指す時刻までの残り時間 `remaining()`', () => {
+    it('現時刻のミリ秒部分は切り捨て', () => {
+      const currentTime = new Date('2020-05-28T07:09:59').getTime();
+      const elapsedTime = currentTime + 999; // 999 milliseconds
+
+      const { result } = renderHook(() => useTimetable(timetable, currentTime));
+      expect(result.current.remaining(currentTime)).toBe(1);
+      expect(result.current.remaining(elapsedTime)).toBe(1);
+    });
+
+    it('次発車時刻を過ぎると残り時間は`0`になる', () => {
+      const currentTime = new Date('2020-05-28T06:29:59').getTime();
+      const elapsedTime = currentTime + 1999; // 1.999 seconds
+
+      const { result } = renderHook(() => useTimetable(timetable, currentTime));
+      expect(result.current.remaining(currentTime)).toBe(1);
+      expect(result.current.remaining(elapsedTime)).toBe(0);
+    });
+
+    it('発車時刻を過ぎ再描画されるときindexが進み残り時間も更新される', () => {
+      const currentTime = new Date('2020-05-28T06:29:59').getTime();
+      const elapsedTime = currentTime + 2000; // 2 seconds
+
+      const { result } = renderHook(() => useTimetable(timetable, currentTime));
+      expect(result.current.remaining(currentTime)).toBe(1);
+
+      act(() => {
+        result.current.remaining(elapsedTime);
+      });
+      expect(result.current.remaining(elapsedTime)).toBe(2399);
+    });
+
+    it('`index`が進んでいる状態での残り時間を求める', () => {
+      const currentTime = new Date('2020-05-28T06:29:59').getTime();
+      const { result } = renderHook(() => useTimetable(timetable, currentTime));
+      act(() => {
+        result.current.next();
+      });
+      expect(result.current.remaining(currentTime)).toBe(2401);
+    });
+
+    it('`index`が進んでいる状態で次発時刻を過ぎると`index`が更新される', () => {
+      const currentTime = new Date('2020-05-28T06:29:59').getTime();
+      const elapsedTime = currentTime + 2000; // 2 seconds
+
+      const { result } = renderHook(() => useTimetable(timetable, currentTime));
+      act(() => {
+        result.current.next();
+      });
+      expect(result.current.index).toBe(1);
+
+      act(() => {
+        expect(result.current.remaining(elapsedTime)).toBe(2399);
+      });
+      expect(result.current.index).toBe(0);
+    });
+  });
+
   describe('時間経過で保持する時刻表データも進む', () => {
     it('発車時刻ちょうどの場合は残り時間は`0`', () => {
       const currentTime = new Date('2020-05-28T07:10:00').getTime();
