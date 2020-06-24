@@ -12,7 +12,7 @@ describe('useTimetable hooks', () => {
     const currentTime = new Date('2020-05-28T07:09:30').getTime();
     const { result } = renderHook(() => useTimetable(timetable, currentTime));
     expect(result.current.index).toBe(0);
-    expect(result.current.remaining).toBe(30);
+    expect(result.current.remaining(currentTime)).toBe(30);
   });
 
   describe('時間経過で保持する時刻表データも進む', () => {
@@ -28,7 +28,7 @@ describe('useTimetable hooks', () => {
     it('発車時刻ちょうどの場合は残り時間は`0`', () => {
       const currentTime = new Date('2020-05-28T07:10:00').getTime();
       const { result } = renderHook(() => useTimetable(timetable, currentTime));
-      expect(result.current.remaining).toBe(0);
+      expect(result.current.remaining(currentTime)).toBe(0);
     });
 
     it('発車済みの時刻は削除される', () => {
@@ -36,12 +36,12 @@ describe('useTimetable hooks', () => {
       const elapsedTime = currentTime + 2000; // 2 seconds
 
       const { result } = renderHook(() => useTimetable(timetable, currentTime));
-      expect(result.current.remaining).toBe(1);
+      expect(result.current.remaining(currentTime)).toBe(1);
 
       act(() => {
         result.current.tick(elapsedTime);
       });
-      expect(result.current.remaining).toBe(2399);
+      expect(result.current.remaining(elapsedTime)).toBe(2399);
     });
 
     it('発車時刻を越えたとき`index`が先頭`0`であれば維持', () => {

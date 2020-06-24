@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { Reducer, useReducer, useCallback } from 'react';
 
 export type TimetableProps = {
   schedule: number[];
@@ -10,7 +10,12 @@ export type TimetableHook = {
   value: number;
   tick: (nextTime: number) => void;
   next: () => void;
-  remaining: number;
+  prev: () => void;
+  remaining: (time: number) => number;
+  isFirst: () => boolean;
+  isLast: () => boolean;
+  moveFirst: () => void;
+  moveLast: () => void;
 };
 
 const getSecondsSince4am: (time: number) => number = (time) => {
@@ -29,47 +34,111 @@ const getSlicedData: (data: number[], time: number) => number[] = (
   return data.filter((s) => s >= currentTimeAsSeconds);
 };
 
+type TimetableState = {
+  schedule: number[];
+  data: number[];
+  index: number;
+};
+
+enum ActionType {
+  TICK = 'TICK',
+  NEXT = 'NEXT',
+  PREV = 'PREV',
+  MOVE_FIRST = 'MOVE_FIRST',
+  MOVE_LAST = 'MOVE_LAST',
+}
+
+type TimetableAction = {
+  type: ActionType;
+  payload?: TimetableState | number;
+};
+
+const reducer: Reducer<TimetableState, TimetableAction> = (state, action) => {
+  const { index, data } = state;
+  switch (action.type) {
+    case ActionType.TICK: {
+      if (typeof action.payload !== 'number') {
+        throw new Error('payload:number is required');
+      }
+      const nextData = getSlicedData(data, action.payload);
+      return {
+        ...state,
+        data: nextData,
+        index: data.length !== nextData.length && index > 0 ? index - 1 : index,
+      };
+    }
+    case ActionType.NEXT: {
+      return {
+        ...state,
+        index: index === data.length - 1 ? index : index + 1,
+      };
+    }
+    case ActionType.PREV: {
+      return {
+        ...state,
+        index: index === 0 ? 0 : index - 1,
+      };
+    }
+    case ActionType.MOVE_FIRST: {
+      return { ...state, index: 0 };
+    }
+    case ActionType.MOVE_LAST: {
+      return { ...state, index: data.length - 1 };
+    }
+    default: {
+      throw new Error('never rearch action');
+    }
+  }
+};
+
 const useTimetable = (
   timetable: TimetableProps,
   currentTime: number = Date.now(),
 ): TimetableHook => {
-  const time = useRef(currentTime);
-  const [currentIndex, setIndex] = useState(0);
-  const [currentData, setData] = useState(
-    getSlicedData(timetable.data, time.current),
+  const [{ index: currentIndex, data: currentData }, dispatch] = useReducer(
+    reducer,
+    {
+      ...timetable,
+      data: getSlicedData(timetable.data, currentTime),
+      index: 0,
+    },
+  );
+
+  const next = useCallback(() => dispatch({ type: ActionType.NEXT }), []);
+
+  const prev = useCallback(() => dispatch({ type: ActionType.PREV }), []);
+
+  const tick = useCallback<TimetableHook['tick']>(
+    (nextTime) => dispatch({ type: ActionType.TICK, payload: nextTime }),
+    [],
   );
 
   const value = currentData[currentIndex];
-  const remaining = value - getSecondsSince4am(time.current);
-
-  const next = useCallback(() => {
-    setIndex((prevIndex) => {
-      if (prevIndex >= currentData.length - 1) {
-        return currentData.length - 1;
-      }
-      return prevIndex + 1;
-    });
-  }, [currentData.length]);
-
-  const prev = useCallback(() => {
-    setIndex((prevIndex) => {
-      if (prevIndex <= 0) {
+  const remaining = useCallback<TimetableHook['remaining']>(
+    (time) => {
+      const remainingTime = value - getSecondsSince4am(time);
+      if (remainingTime < 0) {
+        tick(time);
         return 0;
       }
-      return prevIndex - 1;
-    });
-  }, []);
-
-  const tick = useCallback<TimetableHook['tick']>(
-    (nextTime) => {
-      time.current = nextTime;
-      const nextData = getSlicedData(timetable.data, time.current);
-      if (currentData.length !== nextData.length) {
-        prev();
-      }
-      setData(nextData);
+      return remainingTime;
     },
-    [timetable.data, currentData.length, prev],
+    [value, tick],
+  );
+
+  const isFirst = useCallback(() => currentIndex === 0, [currentIndex]);
+  const isLast = useCallback(() => currentIndex === currentData.length - 1, [
+    currentIndex,
+    currentData.length,
+  ]);
+
+  const moveFirst = useCallback(
+    () => dispatch({ type: ActionType.MOVE_FIRST }),
+    [],
+  );
+  const moveLast = useCallback(
+    () => dispatch({ type: ActionType.MOVE_LAST }),
+    [],
   );
 
   return {
@@ -77,7 +146,12 @@ const useTimetable = (
     value,
     tick,
     next,
+    prev,
     remaining,
+    isFirst,
+    isLast,
+    moveFirst,
+    moveLast,
   };
 };
 
