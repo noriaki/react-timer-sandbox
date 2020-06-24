@@ -77,6 +77,8 @@ module.exports = {
         argsIgnorePattern: '^_',
       },
     ],
+    '@typescript-eslint/camelcase': 'off',
+    '@typescript-eslint/no-floating-promises': 'off',
     'react/prop-types': 'off',
     'no-restricted-syntax': 'off',
   },

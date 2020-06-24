@@ -5,8 +5,8 @@ import useLinkedList from '~/hooks/useLinkedList';
 describe('useLinkedList hooks', () => {
   it('set initial list', () => {
     const { result } = renderHook(() => useLinkedList<number>([1, 10, 100]));
-    const { state, index, value } = result.current;
-    expect(state).toEqual([1, 10, 100]);
+    const { list, index, value } = result.current;
+    expect(list).toEqual([1, 10, 100]);
     expect(index).toBe(0);
     expect(value).toBe(1);
   });
@@ -127,5 +127,22 @@ describe('useLinkedList hooks', () => {
     expect(result.current.isLast()).toBe(true);
     expect(result.current.index).toBe(list.length - 1);
     expect(result.current.value).toBe(100);
+  });
+
+  it('multiple lists', () => {
+    const numbers = [1, 10, 100];
+    const strings = ['a', 'b', 'c'];
+
+    const { result: num } = renderHook(() => useLinkedList<number>(numbers));
+    const { result: str } = renderHook(() => useLinkedList<string>(strings));
+
+    expect(num.current.index).toBe(0);
+    expect(str.current.index).toBe(0);
+
+    act(() => {
+      num.current.next();
+    });
+    expect(num.current.index).toBe(1);
+    expect(str.current.index).toBe(0);
   });
 });
