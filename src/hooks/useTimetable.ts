@@ -50,7 +50,7 @@ enum ActionType {
 
 type TimetableAction = {
   type: ActionType;
-  payload?: TimetableState | number;
+  payload?: number;
 };
 
 const reducer: Reducer<TimetableState, TimetableAction> = (state, action) => {
